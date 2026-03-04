@@ -10,13 +10,16 @@ export default function Dashboard() {
   const [activeTab, setActiveTab] = useState('User Overview');
   
   // Custom hook containing all the logic you refactored
-  const { 
-    users, 
-    withdrawals, 
-    transactions, 
-    stats, 
-    deleteUser, 
-    handleWithdrawalAction 
+  const {
+    users,
+    loading,
+    error,
+    withdrawals,
+    transactions,
+    stats,
+    updateUser,
+    deleteUser,
+    handleWithdrawalAction
   } = useUsers();
 
   const fmt = (n) => new Intl.NumberFormat('en-US', { 
@@ -81,7 +84,13 @@ export default function Dashboard() {
         {/* 3. Conditional Feature Rendering */}
         <div className="transition-all duration-300">
           {activeTab === 'User Overview' && (
-            <UserTableWrapper users={users} onDelete={deleteUser} />
+            <UserTableWrapper
+              users={users}
+              loading={loading}
+              error={error}
+              onDelete={deleteUser}
+              onUpdate={updateUser}
+            />
           )}
           
           {activeTab === 'Pending Withdrawals' && (
