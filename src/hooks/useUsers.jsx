@@ -1,6 +1,7 @@
 import { useState, useMemo, useEffect, useCallback } from 'react';
 import { userService } from '../services/userService';
 import { withdrawalService } from '../services/withdrawalService';
+import { transactionService } from '../services/transactionService';
 
 export const useUsers = () => {
   const [users, setUsers] = useState([]);
@@ -14,8 +15,14 @@ export const useUsers = () => {
     setLoading(true);
     setError(null);
     try {
-      const data = await userService.getAll();
-      setUsers(data);
+      const res = await userService.getAll();
+      // API returns { success, message, data: [...] }
+      const list = Array.isArray(res)
+        ? res
+        : Array.isArray(res?.data)
+        ? res.data
+        : [];
+      setUsers(list);
     } catch (err) {
       setError(err.message);
     } finally {
@@ -25,24 +32,45 @@ export const useUsers = () => {
 
   const fetchWithdrawals = useCallback(async () => {
     try {
-      const data = await withdrawalService.getAll({ status: 'PENDING' });
-      setWithdrawals(data);
+      const res = await withdrawalService.getAll({ status: 'PENDING' });
+      const list = Array.isArray(res)
+        ? res
+        : Array.isArray(res?.data)
+        ? res.data
+        : [];
+      setWithdrawals(list);
     } catch (err) {
       console.error('Failed to fetch withdrawals:', err.message);
+    }
+  }, []);
+
+  // transactions fetch
+  const fetchTransactions = useCallback(async (opts = { page: 1, limit: 10, type: 'all' }) => {
+    try {
+      const res = await transactionService.getHistory(opts);
+      const list = Array.isArray(res)
+        ? res
+        : Array.isArray(res?.data)
+        ? res.data
+        : [];
+      setTransactions(list);
+    } catch (err) {
+      console.error('Failed to fetch transactions:', err.message);
     }
   }, []);
 
   useEffect(() => {
     fetchUsers();
     fetchWithdrawals();
-  }, [fetchUsers, fetchWithdrawals]);
+    fetchTransactions();
+  }, [fetchUsers, fetchWithdrawals, fetchTransactions]);
 
   // Memoized Stats for the StatCards
   const stats = useMemo(() => ({
     totalUsers: users.length,
-    totalDeposits: users.reduce((acc, u) => acc + (u.totalDeposit || 0), 0),
-    totalWithdrawn: users.reduce((acc, u) => acc + (u.totalWithdrawal || 0), 0),
-    platinum: users.filter(u => u.rank === 'Platinum').length,
+    totalDeposits: users.reduce((acc, u) => acc + (u?.totalDeposit || 0), 0),
+    totalWithdrawn: users.reduce((acc, u) => acc + (u?.totalWithdrawal || 0), 0),
+    platinum: users.filter(u => u?.rank === 'Platinum').length,
   }), [users]);
 
   // Update user via API (name + phone)

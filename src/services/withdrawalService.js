@@ -7,13 +7,26 @@ const authHeaders = () => ({
   Authorization: `Bearer ${getToken()}`,
 });
 
+const handleResponse = async (res) => {
+  if (res.status === 401) {
+    localStorage.removeItem('token');
+    localStorage.removeItem('role');
+    window.location.href = '/auth/login';
+    throw new Error('Unauthorized');
+  }
+  if (!res.ok) {
+    const txt = await res.text();
+    throw new Error(txt || 'API error');
+  }
+  return res.json();
+};
+
 export const withdrawalService = {
   getStats: async () => {
     const res = await fetch(`${BASE_URL}/api/withdrawals/stats`, {
       headers: authHeaders(),
     });
-    if (!res.ok) throw new Error('Failed to fetch withdrawal stats');
-    return res.json();
+    return handleResponse(res);
   },
 
   getAll: async ({ type, status } = {}) => {
@@ -24,16 +37,14 @@ export const withdrawalService = {
     const res = await fetch(`${BASE_URL}/api/withdrawals${query}`, {
       headers: authHeaders(),
     });
-    if (!res.ok) throw new Error('Failed to fetch withdrawals');
-    return res.json();
+    return handleResponse(res);
   },
 
   getById: async (withdrawalId) => {
     const res = await fetch(`${BASE_URL}/api/withdrawals/${withdrawalId}`, {
       headers: authHeaders(),
     });
-    if (!res.ok) throw new Error('Failed to fetch withdrawal');
-    return res.json();
+    return handleResponse(res);
   },
 
   cancel: async (withdrawalId) => {
@@ -41,8 +52,7 @@ export const withdrawalService = {
       method: 'POST',
       headers: authHeaders(),
     });
-    if (!res.ok) throw new Error('Failed to cancel withdrawal');
-    return res.json();
+    return handleResponse(res);
   },
 
   processPrincipal: async () => {
@@ -50,7 +60,6 @@ export const withdrawalService = {
       method: 'POST',
       headers: authHeaders(),
     });
-    if (!res.ok) throw new Error('Failed to process principal withdrawal');
-    return res.json();
+    return handleResponse(res);
   },
 };

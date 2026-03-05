@@ -27,13 +27,13 @@ export const TransactionTableWrapper = ({ transactions }) => {
           <tr key={idx} className="hover:bg-slate-50/50 transition-colors">
             <td className="px-6 py-4">
               <div className="text-slate-700 font-medium">
-                {new Date(tx.processedAt).toLocaleDateString('en-US', { month: 'short', day: '2-digit', year: 'numeric' })}
+                {new Date(tx.timestamp || tx.processedAt).toLocaleDateString('en-US', { month: 'short', day: '2-digit', year: 'numeric' })}
               </div>
               <div className="text-[10px] text-slate-400 uppercase">
-                {new Date(tx.processedAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                {new Date(tx.timestamp || tx.processedAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
               </div>
             </td>
-            <td className="px-6 py-4 font-semibold text-slate-800">{tx.name}</td>
+            <td className="px-6 py-4 font-semibold text-slate-800">{tx.user_name}</td>
             <td className="px-6 py-4">
               <span className={`px-2 py-1 rounded text-[10px] font-black tracking-widest uppercase ${
                 tx.type === 'Profit' 

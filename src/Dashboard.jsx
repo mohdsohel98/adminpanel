@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useAuth } from './context/AuthContext';
 import { useUsers } from './hooks/useUsers';
 import { StatCard } from './components/StatCards';
 import { ActiveButton } from './components/ActiveButton';
@@ -8,6 +9,7 @@ import { TransactionTableWrapper } from './features/TransactionTableWrapper';
 
 export default function Dashboard() {
   const [activeTab, setActiveTab] = useState('User Overview');
+  const { logout } = useAuth();
   
   // Custom hook containing all the logic you refactored
   const {
@@ -36,11 +38,14 @@ export default function Dashboard() {
           <span className="font-black text-lg tracking-tight text-slate-800">AdminPanel</span>
         </div>
         <div className="flex items-center gap-3">
-          <div className="text-right hidden sm:block">
-            <p className="text-[10px] font-bold text-slate-400 uppercase">Super Admin</p>
-            <p className="text-xs font-bold text-slate-800">SA</p>
-          </div>
+          {/* role display temporarily removed while backend doesn't provide it */}
           <div className="w-10 h-10 rounded-full bg-slate-100 border border-slate-200" />
+          <button
+            onClick={logout}
+            className="text-sm text-red-600 hover:underline"
+          >
+            Logout
+          </button>
         </div>
       </nav>
 
