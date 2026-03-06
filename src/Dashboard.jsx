@@ -9,7 +9,8 @@ import { TransactionTableWrapper } from './features/TransactionTableWrapper';
 
 export default function Dashboard() {
   const [activeTab, setActiveTab] = useState('User Overview');
-  const { logout } = useAuth();
+  const [showProfile, setShowProfile] = useState(false);
+  const { logout, admin } = useAuth();
   
   // Custom hook containing all the logic you refactored
   const {
@@ -38,14 +39,33 @@ export default function Dashboard() {
           <span className="font-black text-lg tracking-tight text-slate-800">AdminPanel</span>
         </div>
         <div className="flex items-center gap-3">
-          {/* role display temporarily removed while backend doesn't provide it */}
-          <div className="w-10 h-10 rounded-full bg-slate-100 border border-slate-200" />
-          <button
-            onClick={logout}
-            className="text-sm text-red-600 hover:underline"
-          >
-            Logout
-          </button>
+          <div className="relative">
+            <button
+              onClick={() => setShowProfile(!showProfile)}
+              className="flex items-center gap-2 text-sm font-medium text-slate-700 hover:text-slate-900"
+            >
+              <div className="w-8 h-8 rounded-full bg-slate-200 flex items-center justify-center text-slate-600 font-semibold">
+                {admin?.name?.charAt(0) || 'A'}
+              </div>
+              {admin?.name || 'Admin'}
+            </button>
+            {showProfile && (
+              <div className="absolute right-0 mt-2 w-48 bg-white border border-slate-200 rounded-lg shadow-lg py-2 z-10">
+                <div className="px-4 py-2 text-sm text-slate-600 border-b border-slate-100">
+                  {admin?.email || 'admin@dev.com'}
+                </div>
+                <button
+                  onClick={() => {
+                    logout();
+                    setShowProfile(false);
+                  }}
+                  className="w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-slate-50"
+                >
+                  Logout
+                </button>
+              </div>
+            )}
+          </div>
         </div>
       </nav>
 

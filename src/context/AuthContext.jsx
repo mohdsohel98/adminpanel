@@ -1,39 +1,45 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
-import { authService, getToken } from '../services/authService';
+import { authService, getToken, getRefreshToken, getAdmin, getRole } from '../services/authService';
 
 const AuthContext = createContext(null);
 
 export const AuthProvider = ({ children }) => {
   const [token, setToken] = useState(authService.isAuthenticated() ? getToken() : null);
-  // role support temporarily disabled until backend includes it
-  // const [role, setRole] = useState(getRole());
+  const [role, setRole] = useState(authService.isAuthenticated() ? getRole() : null);
+  const [admin, setAdmin] = useState(authService.isAuthenticated() ? getAdmin() : null);
+  const [refreshToken, setRefreshToken] = useState(authService.isAuthenticated() ? getRefreshToken() : null);
 
   useEffect(() => {
     // synchronize from localStorage on mount
     if (authService.isAuthenticated()) {
       setToken(getToken());
-      // setRole(getRole());
+      setRole(getRole());
+      setAdmin(getAdmin());
+      setRefreshToken(getRefreshToken());
     }
   }, []);
 
   const login = async (email, password) => {
     const data = await authService.login(email, password);
     setToken(data.token);
-    // role not available yet, will be added later
-    // setRole(data.role || getRole());
+    setRole(getRole()); // decode from token
+    setAdmin(data.admin);
+    setRefreshToken(data.refreshToken);
     return data;
   };
 
   const logout = () => {
     authService.logout();
     setToken(null);
-    // setRole(null);
+    setRole(null);
+    setAdmin(null);
+    setRefreshToken(null);
   };
 
   const isAuthenticated = () => !!token;
 
   return (
-    <AuthContext.Provider value={{ token, /*role,*/ login, logout, isAuthenticated }}>
+    <AuthContext.Provider value={{ token, role, admin, refreshToken, login, logout, isAuthenticated }}>
       {children}
     </AuthContext.Provider>
   );
