@@ -1,9 +1,10 @@
 import React, { useState } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { useNavigate, Navigate } from 'react-router-dom';
+import { getRole } from '../services/authService';
 
 export const Login = () => {
-  const { login, isAuthenticated } = useAuth();
+  const { login, isAuthenticated, role } = useAuth();
   const navigate = useNavigate();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -18,7 +19,12 @@ export const Login = () => {
     setError(null);
     try {
       await login(email, password);
-      navigate('/');
+      const currentRole = getRole();
+      if (currentRole === 'ADMIN') {
+        navigate('/');
+      } else {
+        navigate('/unauthorized');
+      }
     } catch (err) {
       setError(err.message);
     }
