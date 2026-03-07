@@ -7,6 +7,7 @@ import { UserTableWrapper } from './features/UserTableWrapper';
 import { WithdrawTableWrapper } from './features/WithdrawTableWrapper';
 import { TransactionTableWrapper } from './features/TransactionTableWrapper';
 import Logo from './components/Logo';
+import SettingsComponent from './components/Settings';
 import {
   LayoutDashboard,
   Users,
@@ -29,6 +30,7 @@ export default function Dashboard() {
   const [activeTab, setActiveTab] = useState('Dashboard');
   const [showProfile, setShowProfile] = useState(false);
   const [sidebarOpen, setSidebarOpen] = useState(true);
+  const [showSettings, setShowSettings] = useState(false);
   const { logout, admin } = useAuth();
   const { theme, toggleTheme } = useTheme();
 
@@ -140,6 +142,7 @@ export default function Dashboard() {
           </div>
 
           <button
+            onClick={() => setShowSettings(true)}
             className="w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-200 text-gray-400 hover:bg-gray-800 hover:text-gray-100 group"
           >
             <Settings className="w-5 h-5" />
@@ -208,7 +211,10 @@ export default function Dashboard() {
                 <Bell className="w-5 h-5" />
                 <span className="absolute top-1.5 right-1.5 w-2 h-2 bg-rose-500 rounded-full animate-pulse"></span>
               </button>
-              <button className="p-2.5 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-xl transition-all">
+              <button
+                onClick={() => setShowSettings(true)}
+                className="p-2.5 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-xl transition-all"
+              >
                 <Settings className="w-5 h-5" />
               </button>
             </div>
@@ -270,6 +276,9 @@ export default function Dashboard() {
           </div>
         </div>
       </main>
+
+      {/* Settings Modal */}
+      <SettingsComponent isOpen={showSettings} onClose={() => setShowSettings(false)} />
     </div>
   );
 }
