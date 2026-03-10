@@ -152,9 +152,12 @@ export const UserTableWrapper = ({ users, onDelete, onUpdate, loading, error }) 
                 <Td>
                   <div className="flex items-center gap-3">
                     <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-teal-500 to-cyan-600 text-white flex items-center justify-center font-bold text-sm shadow-sm">
-                      {user.name.charAt(0)}
+                      {/* {user.name.charAt(0)} */}
+
+                      {user.name?.charAt(0) ?? "?"}
                     </div>
-                    <span className="font-bold text-slate-800">{user.name}</span>
+                    {/* <span className="font-bold text-slate-800">{user.name}</span> */}
+                    <span className="font-bold text-slate-800">{user.name ?? "Unknown"}</span>
                   </div>
                 </Td>
                 <Td className="font-mono text-[11px] text-slate-500 bg-slate-50/50 rounded-md px-2 py-1 mx-6 inline-block mt-3">
